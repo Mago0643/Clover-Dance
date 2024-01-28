@@ -1,4 +1,2 @@
 Go to here and follow steps
 https://haxeflixel.com/documentation/getting-started/
-
-and you cant use HaxeDevelop cuz thats not supporting anymore
