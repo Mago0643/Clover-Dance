@@ -1,33 +1,76 @@
 package states;
 
-import openfl.system.Capabilities;
+import backend.SongData.Song;
+
+import flixel.math.FlxMath;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
+
 import hscript.Interp;
 import hscript.Parser;
+
 import openfl.Assets;
-import backend.SongData.Song;
+import openfl.system.Capabilities;
 import openfl.display.BitmapData;
 
+/**
+* how was the fall
+*/
 class PlayState extends FlxState
 {
+	var interp:Interp;
 	var musicPlayer:MusicHandler;
-	var debugText:FlxText;
+	
 	var clover:FlxSprite;
 	var cloverYellow:FlxSprite;
-	var debug:Bool = false;
-	var interp:Interp;
 	var acid:FlxSprite;
-	var infoTxt:FlxText;
 	var infoBG:FlxSprite;
+	var updateBG:FlxSprite;
 
-	// a surprise
-	public var please_do_not_use_cheat_engine:String = null;
+	var debugText:FlxText;
+	var infoTxt:FlxText;
+	var updateTxt:FlxText;
+
+	var debug:Bool = false;
+	var shouldUpdate:Bool = false;
+	var currentVersion:Float = 1.0;
 
 	override public function create()
 	{
 		FlxText.defaultFont = "fonts/DMono.ttf";
 		Global.save.bind("CD", "Lego0_77");
+
+		// making it jic
+		var data = new haxe.Http("https://raw.githubusercontent.com/Mago0643/Clover-Dance/main/version.txt?token=GHSAT0AAAAAACJFBOU4VZ4AK2EHD34QKP7CZNWVTQQ");
+		data.onData = function(data)
+		{
+			if (currentVersion < Std.parseFloat(data))
+			{
+				shouldUpdate = true;
+
+				updateBG = new FlxSprite().makeGraphic(Global.width, Global.height, FlxColor.BLACK);
+				add(updateBG);
+
+				updateTxt = new FlxText(0, 0, 0, "The App is Updated!\nPress SPACE to Go to a Download Page!", 25);
+				updateTxt.alignment = CENTER;
+				updateTxt.antialiasing = false;
+				updateTxt.screenCenter();
+				add(updateTxt);
+				return;
+			}
+		};
+		data.onError = function(msg)
+		{
+			var str = "ERROR WHILE CHECKING UPDATE: " + msg;
+			#if sys
+			Sys.println(str);
+			#else
+			trace(str);
+			#end
+		};
+
+		data.request();
+
 		var songdata = Song.getSongData(AssetPaths.songData__json);
 		musicPlayer = new MusicHandler(AssetPaths.Song__ogg, songdata.bpm);
 
@@ -43,7 +86,7 @@ class PlayState extends FlxState
 		clover.screenCenter();
 		add(clover);
 
-		cloverYellow = new FlxSprite().loadGraphic("assets/images/cloverDanceYellow.png", true, Math.floor(cloverCache.width / 7), cloverCache.height);
+		cloverYellow = new FlxSprite().loadGraphic(AssetPaths.cloverDanceYellow__png, true, Math.floor(cloverCache.width / 7), cloverCache.height);
 		cloverYellow.animation.add("danceL", [0, 1, 2], 0.745*(songdata.bpm/16), false);
 		cloverYellow.animation.add("danceR", [3, 4, 5], 0.745*(songdata.bpm/16), false);
 		cloverYellow.animation.add("idle", [6], 5, true);
@@ -92,14 +135,12 @@ class PlayState extends FlxState
 		interp.variables.set("Lib", openfl.Lib);
 		interp.variables.set("FlxTween", FlxTween);
 		interp.variables.set("FlxEase", FlxEase);
-		interp.variables.set("wwidth", Global.width);
-		interp.variables.set("wheight", Global.height);
 		interp.variables.set("Desktop", Capabilities);
+		interp.variables.set("FlxMath", FlxMath);
 		interp.variables.set("songdata", songdata);
 		musicPlayer.beatHit = function(){
 			interp.variables.set("beat", musicPlayer.beat);
-			var program = new Parser().parseString(Assets.getText("assets/data/events.hx"));
-			interp.execute(program);
+			interp.execute(new Parser().parseString(Assets.getText("assets/data/events.hx")));
 		};
 		musicPlayer.stepHit = function()
 		{
@@ -130,6 +171,7 @@ class PlayState extends FlxState
 		/*Global.drawFramerate = 240;
 		Global.updateFramerate = 240;*/
 		super.create();
+		// show the volume tray
 		Global.sound.changeVolume(0);
 	}
 
@@ -152,34 +194,43 @@ class PlayState extends FlxState
 			#end
 		}*/
 
-		if (Global.keys.justPressed.SPACE && !started && !cannotSpam)
+		if (!shouldUpdate)
 		{
-			cannotSpam = true; // doing this to prevent spamming
-			FlxTween.tween(infoTxt, {alpha: 0}, musicPlayer.beatSecond, {onComplete: function(f)
-				{
-					infoTxt.destroy();
-					infoBG.destroy();
-					musicPlayer.fadeIn(musicPlayer.beatSecond);
-					started = true;
-				}
-			});
-			FlxTween.tween(infoBG, {alpha: 0}, musicPlayer.beatSecond);
-		}
-		
-		if (!musicPlayer.playing && started)
-		{
-			musicPlayer.resetVar();
-			musicPlayer.play(true);
-		}
+			if (Global.keys.justPressed.SPACE && !started && !cannotSpam)
+			{
+				cannotSpam = true; // doing this to prevent spamming
+				FlxTween.tween(infoTxt, {alpha: 0}, musicPlayer.beatSecond, {onComplete: function(f)
+					{
+						infoTxt.destroy();
+						infoBG.destroy();
+						musicPlayer.fadeIn(musicPlayer.beatSecond);
+						started = true;
+					}
+				});
+				FlxTween.tween(infoBG, {alpha: 0}, musicPlayer.beatSecond);
+			}
+			
+			if (!musicPlayer.playing && started)
+			{
+				musicPlayer.resetVar();
+				musicPlayer.play(true);
+			}
 
-		if (debug)
-		{
-			var s = "Song Time: " + musicPlayer.time + "\nStep: " + musicPlayer.step + "\nBeat: " + musicPlayer.beat;
-			debugText.text = s + "\n";
-		}
+			if (debug)
+			{
+				var s = "Song Time: " + musicPlayer.time + "\nStep: " + musicPlayer.step + "\nBeat: " + musicPlayer.beat;
+				debugText.text = s + "\n";
+			}
 
-		interp.variables.set("songTime", musicPlayer.time);
-		interp.variables.set("musicPlayer", musicPlayer);
+			interp.variables.set("songTime", musicPlayer.time);
+			interp.variables.set("musicPlayer", musicPlayer);
+		} else {
+			if (Global.keys.justPressed.SPACE)
+			{
+				Global.openURL("https://github.com/Mago0643/Clover-Dance");
+				#if sys Sys.exit(0); #end
+			}
+		}
 
 		Global.sound.volumeHandler = function(volume:Float)
 		{
@@ -193,7 +244,7 @@ class PlayState extends FlxState
 			Global.save.flush();
 		}
 
-		// secret: you can press esc to force exit (jic)
+		// secret: you can press esc to force exit
 		#if sys
 		if (Global.keys.justPressed.ESCAPE)
 			Sys.exit(0);
