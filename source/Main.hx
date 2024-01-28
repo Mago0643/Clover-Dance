@@ -1,8 +1,9 @@
 package;
 
 import openfl.display.FPS;
-import flixel.FlxGame;
 import openfl.display.Sprite;
+
+import flixel.FlxGame;
 
 class Main extends Sprite
 {
