@@ -31,7 +31,13 @@
 
 	<set name="BUILD_DIR" value="export" />
 	<source path="source" />
-	<assets path="assets" />
+
+	<assets path="assets/data/events.hx" unless="html5" />
+	<assets path="assets/data/eventsHTML.hx" if="html5" />
+	<assets path="assets/data/songData.json" />
+	
+	<assets path="assets/images" />
+	<assets path="assets/music" />
 	<assets path="fonts" embed='true' />
 
 	<!-- _______________________________ Libraries ______________________________ -->

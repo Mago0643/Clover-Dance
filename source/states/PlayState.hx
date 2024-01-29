@@ -1,5 +1,9 @@
 package states;
 
+#if html5
+import js.Browser;
+#end
+
 import backend.SongData.Song;
 
 import flixel.math.FlxMath;
@@ -11,7 +15,9 @@ import hscript.Parser;
 
 import openfl.Assets;
 import openfl.system.Capabilities;
+#if (!html5 && !flash)
 import openfl.display.BitmapData;
+#end
 
 /**
 * how was the fall
@@ -41,7 +47,7 @@ class PlayState extends FlxState
 		Global.save.bind("CD", "Lego0_77");
 
 		// making it jic
-		var data = new haxe.Http("https://raw.githubusercontent.com/Mago0643/Clover-Dance/main/version.txt?token=GHSAT0AAAAAACJFBOU4VZ4AK2EHD34QKP7CZNWVTQQ");
+		/*var data = new haxe.Http("https://raw.githubusercontent.com/Mago0643/Clover-Dance/main/version.txt?token=GHSAT0AAAAAACJFBOU4VZ4AK2EHD34QKP7CZNWVTQQ");
 		data.onData = function(data)
 		{
 			if (currentVersion < Std.parseFloat(data))
@@ -69,13 +75,17 @@ class PlayState extends FlxState
 			#end
 		};
 
-		data.request();
+		data.request();*/
 
 		var songdata = Song.getSongData(AssetPaths.songData__json);
 		musicPlayer = new MusicHandler(AssetPaths.Song__ogg, songdata.bpm);
 
+		#if (!html5 && !flash)
 		var cloverCache = BitmapData.fromFile(AssetPaths.cloverDance__png);
-		clover = new FlxSprite().loadGraphic(AssetPaths.cloverDance__png, true, Math.floor(cloverCache.width / 7), cloverCache.height);
+		#else
+		var cloverCache = new FlxSprite().loadGraphic(AssetPaths.cloverDance__png);
+		#end
+		clover = new FlxSprite().loadGraphic(AssetPaths.cloverDance__png, true, Math.floor(cloverCache.width / 7), Math.floor(cloverCache.height));
 		clover.animation.add("danceL", [0, 1, 2], 0.745*(songdata.bpm/16), false);
 		clover.animation.add("danceR", [3, 4, 5], 0.745*(songdata.bpm/16), false);
 		clover.animation.add("idle", [6], 5, true);
@@ -86,7 +96,7 @@ class PlayState extends FlxState
 		clover.screenCenter();
 		add(clover);
 
-		cloverYellow = new FlxSprite().loadGraphic(AssetPaths.cloverDanceYellow__png, true, Math.floor(cloverCache.width / 7), cloverCache.height);
+		cloverYellow = new FlxSprite().loadGraphic(AssetPaths.cloverDanceYellow__png, true, Math.floor(cloverCache.width / 7), Math.floor(cloverCache.height));
 		cloverYellow.animation.add("danceL", [0, 1, 2], 0.745*(songdata.bpm/16), false);
 		cloverYellow.animation.add("danceR", [3, 4, 5], 0.745*(songdata.bpm/16), false);
 		cloverYellow.animation.add("idle", [6], 5, true);
@@ -126,13 +136,18 @@ class PlayState extends FlxState
 			add(debugText);
 		}
 
+		Browser.document.body.style.backgroundColor = "black";
 		interp = new Interp();
 		interp.variables.set("Math", Math);
 		interp.variables.set("Global", Global);
 		interp.variables.set("clover", clover);
 		interp.variables.set("cloverYellow", cloverYellow);
 		interp.variables.set("acid", acid);
+		#if !html5
 		interp.variables.set("Lib", openfl.Lib);
+		#else
+		interp.variables.set("document", Browser.document);
+		#end
 		interp.variables.set("FlxTween", FlxTween);
 		interp.variables.set("FlxEase", FlxEase);
 		interp.variables.set("Desktop", Capabilities);
@@ -140,7 +155,12 @@ class PlayState extends FlxState
 		interp.variables.set("songdata", songdata);
 		musicPlayer.beatHit = function(){
 			interp.variables.set("beat", musicPlayer.beat);
-			interp.execute(new Parser().parseString(Assets.getText("assets/data/events.hx")));
+			#if !html5
+			var path = "assets/data/events.hx";
+			#else
+			var path = "assets/data/eventsHTML.hx";
+			#end
+			interp.execute(new Parser().parseString(Assets.getText(path)));
 		};
 		musicPlayer.stepHit = function()
 		{
@@ -193,6 +213,13 @@ class PlayState extends FlxState
 			trace(str);
 			#end
 		}*/
+
+		#if html5
+		var style = Browser.document.getElementById('openfl-content').style;
+		style.position = "relative";
+		style.left = ((Browser.window.outerWidth - 640) / 2) + "px";
+		style.top = ((Browser.window.outerHeight - 550) / 2) + "px";
+		#end
 
 		if (!shouldUpdate)
 		{
