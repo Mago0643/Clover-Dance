@@ -64,9 +64,9 @@ if (beat >= 65 && beat < 87)
   } else {
     if (beat % 2 == 0)
     {
-      FlxTween.tween(Lib.application.window, {x: centerX - (200*dMultX), width: wwidth + (400*dMultX)}, musicPlayer.beatSecond/2, {ease: FlxEase.quadOut, onComplete: function(f)
+      FlxTween.tween(Lib.application.window, {x: centerX - (200*dMultX), width: Global.width + (400*dMultX)}, musicPlayer.beatSecond/2, {ease: FlxEase.quadOut, onComplete: function(f)
         {
-          FlxTween.tween(Lib.application.window, {x: centerX, width: wwidth}, musicPlayer.beatSecond/2, {ease: FlxEase.quadIn});
+          FlxTween.tween(Lib.application.window, {x: centerX, width: Global.width}, musicPlayer.beatSecond/2, {ease: FlxEase.quadIn});
         }
       });
     }
