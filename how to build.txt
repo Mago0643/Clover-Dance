@@ -1,2 +1,5 @@
 Go to here and follow steps
 https://haxeflixel.com/documentation/getting-started/
+
+and install C++ packages via Visual Studio for window builds
+(doesn't need for mac, linux builds)
