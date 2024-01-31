@@ -1,6 +1,6 @@
 # credits
 * a song by surasshu
-* all assets came from undertale yellow
+* all assets came from [undertale yellow](https://gamejolt.com/games/UndertaleYellow/136925)
 
 i did only codes
 
