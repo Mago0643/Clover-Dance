@@ -1,6 +1,6 @@
 package backend;
 
-class MusicHandler extends FlxSound
+class MusicState extends FlxState
 {
   public var bpm(default,set):Float = 120;
   function set_bpm(f:Float) {
@@ -16,12 +16,9 @@ class MusicHandler extends FlxSound
   public var beat(default,null):Int = 0;
   public var step(default,null):Int = 0;
 
-  public function new(music:String, bpm:Float)
+  public function new()
   {
     super();
-    loadEmbedded(music);
-    this.bpm = bpm;
-    Global.sound.list.add(this);
   }
 
   public function resetVar()
@@ -30,28 +27,22 @@ class MusicHandler extends FlxSound
     stepHit(); beatHit();
   }
 
-  override function play(ForceRestart:Bool = false, StartTime:Float = 0.0, ?EndTime:Float):FlxSound
-  {
-    if (ForceRestart) resetVar();
-    return super.play(ForceRestart, StartTime, EndTime);
-  }
-
-  /*dynamic public function stepHit(){}
-  dynamic public function beatHit(){}*/
-  public var stepHit:()->Void=function(){};
-  public var beatHit:()->Void=function(){};
+  dynamic public function stepHit(){}
+  dynamic public function beatHit(){}
+  /*public var stepHit:()->Void=function(){};
+  public var beatHit:()->Void=function(){};*/
 
   override function update(elapsed:Float)
   {
-    if (playing)
+    if (Global.sound.music.playing)
     {
-      if (time/1000 >= beatSecond * beat)
+      if (Global.sound.music.time/1000 >= beatSecond * beat)
       {
         beat++;
         beatHit();
       }
 
-      if (time/1000 >= stepSecond * step)
+      if (Global.sound.music.time/1000 >= stepSecond * step)
       {
         step++;
         stepHit();
@@ -59,5 +50,5 @@ class MusicHandler extends FlxSound
     }
 
     super.update(elapsed);
-  }
+  }  
 }

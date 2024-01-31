@@ -30,12 +30,16 @@
 	<!-- _____________________________ Path Settings ____________________________ -->
 
 	<set name="BUILD_DIR" value="export" />
+	<!-- Why they fucking overwrites to release build -->
+	<set name="BUILD_DIR" value="export/debug" if="debug" />
+	<!-- Why Windows Dosen't support for 32bits build -->
+	<set name="BUILD_DIR" value="export/32bit" if="32bits" />
 	<source path="source" />
 
 	<assets path="assets/data/events.hx" unless="html5" />
 	<assets path="assets/data/eventsHTML.hx" if="html5" />
-	<assets path="assets/data/songData.json" />
 	
+	<assets path="assets/data/songData.json" />
 	<assets path="assets/images" />
 	<assets path="assets/music" />
 	<assets path="fonts" embed='true' />

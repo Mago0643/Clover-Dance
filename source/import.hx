@@ -6,6 +6,6 @@ import flixel.FlxSprite;
 import flixel.text.FlxText;
 
 import backend.AssetPaths;
-import backend.MusicHandler;
+import backend.MusicState;
 
 using StringTools;
