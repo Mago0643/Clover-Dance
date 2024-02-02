@@ -29,8 +29,6 @@ class MusicState extends FlxState
 
   dynamic public function stepHit(){}
   dynamic public function beatHit(){}
-  /*public var stepHit:()->Void=function(){};
-  public var beatHit:()->Void=function(){};*/
 
   override function update(elapsed:Float)
   {

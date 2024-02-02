@@ -1,4 +1,4 @@
-// change this "true" to if you window scaling lags for you
+// change this "true" if you window scaling lags for you
 var noScaling = false;
 
 var excludes = [7, 8, 31, 32, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 87, 88];

@@ -1,7 +1,10 @@
 package states;
 
-import flixel.util.FlxStringUtil;
 import backend.SongData.Song;
+
+import shaders.FisheyeShader.FisheyeHandler;
+import shaders.GlitchShader.GlitchHandler;
+import shaders.Glitch2Shader.Glitch2Handler;
 
 #if html5
 import js.Browser;
@@ -10,6 +13,7 @@ import js.Browser;
 import flixel.math.FlxMath;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
+import flixel.util.FlxStringUtil;
 
 import hscript.Interp;
 import hscript.Parser;
@@ -37,6 +41,10 @@ class PlayState extends MusicState
 	var debugText:FlxText;
 	var infoTxt:FlxText;
 
+	var glitch2Shader = new Glitch2Handler();
+	var glitchShader  = new GlitchHandler();
+	var fisheyeShader = new FisheyeHandler();
+
 	var debug:Bool = false;
 
 	override public function create()
@@ -47,8 +55,7 @@ class PlayState extends MusicState
 		var songdata = Song.getSongData(AssetPaths.songData__json);
 		bpm = songdata.bpm;
 		// doing this cuz haxe is STUPID.
-		Global.sound.music = new FlxSound();
-		Global.sound.music.loadEmbedded(AssetPaths.Song__ogg, false);
+		Global.sound.music = new FlxSound().loadEmbedded(AssetPaths.Song__ogg, false);
 
 		var cloverCache = new FlxSprite().loadGraphic(AssetPaths.cloverDance__png);
 		clover = new FlxSprite().loadGraphic(AssetPaths.cloverDance__png, true, Math.floor(cloverCache.width / 7), Math.floor(cloverCache.height));
@@ -87,6 +94,11 @@ class PlayState extends MusicState
 		infoBG.screenCenter();
 		add(infoBG);
 
+		Global.camera.filters = [
+			new ShaderFilter(fisheyeShader.shader), new ShaderFilter(glitchShader.shader),
+			new ShaderFilter(glitch2Shader.shader)
+		];
+
 		// making user not jumpscared by music when opened the app
 		infoTxt = new FlxText(0, 0, 0, "Press SPACE If you're ready.\nYou Can Change Volume with -, +\nThe Song NEVER Stops Until You close the Program.", 22);
 		infoTxt.alignment = CENTER;
@@ -122,6 +134,9 @@ class PlayState extends MusicState
 		interp.variables.set("Desktop", Capabilities);
 		#end
 		interp.variables.set("FlxMath", FlxMath);
+		interp.variables.set("fisheye", fisheyeShader);
+		interp.variables.set("glitch2", glitch2Shader);
+		interp.variables.set("glitch", glitchShader);
 		interp.variables.set("songdata", songdata);
 
 		if (Global.save.data.muted == null) Global.save.data.muted = false;
