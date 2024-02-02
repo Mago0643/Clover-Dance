@@ -8,6 +8,7 @@ typedef SongData = {
   var title:String;
   var artist:String;
   var bpm:Float;
+  var songFile:String;
 }
 
 class Song

@@ -54,8 +54,17 @@ class PlayState extends MusicState
 
 		var songdata = Song.getSongData(AssetPaths.songData__json);
 		bpm = songdata.bpm;
+
+		if (!Assets.exists('assets/music/${songdata.songFile}')) // song Couldn't found
+		{
+			#if sys
+			openfl.Lib.application.window.alert('A Song Couldn\'t Found in\nassets/music/${songdata.songFile}!', 'Fatal Error!');
+			#end
+			return;
+		}
+
 		// doing this cuz haxe is STUPID.
-		Global.sound.music = new FlxSound().loadEmbedded(AssetPaths.Song__ogg, false);
+		Global.sound.music = new FlxSound().loadEmbedded('assets/music/${songdata.songFile}', false);
 
 		var cloverCache = new FlxSprite().loadGraphic(AssetPaths.cloverDance__png);
 		clover = new FlxSprite().loadGraphic(AssetPaths.cloverDance__png, true, Math.floor(cloverCache.width / 7), Math.floor(cloverCache.height));
@@ -169,6 +178,7 @@ class PlayState extends MusicState
 		Global.sound.changeVolume(0);
 	}
 
+	// fnf reference LOLLLOLLOLLOL
 	override function beatHit()
 	{
 		interp.variables.set("beat", beat);
@@ -269,5 +279,4 @@ class PlayState extends MusicState
 
 		super.update(elapsed);
 	}
-
 }

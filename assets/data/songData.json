@@ -1,5 +1,6 @@
 {
   "title": "Eek!",
   "artist": "Surasshu",
-  "bpm": 110
+  "bpm": 110,
+  "songFile": "Song.ogg"
 }
