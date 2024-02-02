@@ -145,6 +145,9 @@ class PlayState extends MusicState
 		interp.variables.set("FlxString", FlxStringUtil);
 		interp.variables.set("FlxBar", flixel.ui.FlxBar);
 		interp.variables.set("debug", debug);
+		interp.variables.set("add", add);
+		interp.variables.set("insert", insert);
+		interp.variables.set("remove", remove);
 		interp.variables.set("addLibrary", function(name:String, libPath:String)
 		{
 			interp.variables.set(name, Type.resolveClass(libPath));
